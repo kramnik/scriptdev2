@@ -312,8 +312,9 @@ struct MANGOS_DLL_DECL npc_khadgars_servantAI : public npc_escortAI
 {
     npc_khadgars_servantAI(Creature* pCreature) : npc_escortAI(pCreature)
     {
+        // Workaround - set run as true because the npc despawns too fast
         if (pCreature->GetOwner() && pCreature->GetOwner()->GetTypeId() == TYPEID_PLAYER)
-            Start(false, (Player*)pCreature->GetOwner());
+            Start(true, (Player*)pCreature->GetOwner());
         else
             error_log("SD2: npc_khadgars_servant can not obtain owner or owner is not a player.");
 
