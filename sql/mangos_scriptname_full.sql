@@ -401,6 +401,7 @@ UPDATE creature_template SET ScriptName='mob_steamrigger_mechanic' WHERE entry=1
 
 /* SERPENTSHRINE CAVERN */
 UPDATE instance_template SET ScriptName='instance_serpent_shrine' WHERE map=548;
+UPDATE gameobject_template SET ScriptName='go_serpentshrine_console' WHERE entry IN (185114,185115,185116,185117,185118,184568);
 UPDATE creature_template SET ScriptName='boss_hydross_the_unstable' WHERE entry=21216;
 /* Leotheras the Blind event */
 UPDATE creature_template SET ScriptName='boss_leotheras_the_blind' WHERE entry=21215;

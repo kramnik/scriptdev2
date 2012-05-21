@@ -30,6 +30,16 @@ enum
     NPC_SHARKKIS                    = 21966,
     NPC_TIDALVESS                   = 21965,
     NPC_LADYVASHJ                   = 21212,
+
+    GO_CONSOLE_HYDROSS              = 185117,
+    GO_CONSOLE_LURKER               = 185118,
+    GO_CONSOLE_LEOTHERAS            = 185115,
+    GO_CONSOLE_KARATHRESS           = 185114,
+    GO_CONSOLE_MOROGRIM             = 185116,
+    GO_CONSOLE_VASHJ                = 184568,
+    GO_BRIDGE_PART_1                = 184203,
+    GO_BRIDGE_PART_2                = 184204,
+    GO_BRIDGE_PART_3                = 184205,
 };
 
 class MANGOS_DLL_DECL instance_serpentshrine_cavern : public ScriptedInstance
@@ -41,6 +51,7 @@ class MANGOS_DLL_DECL instance_serpentshrine_cavern : public ScriptedInstance
         bool IsEncounterInProgress() const;
 
         void OnCreatureCreate(Creature* pCreature);
+        void OnObjectCreate(GameObject* pGo);
 
         void SetData(uint32 uiType, uint32 uiData);
         uint32 GetData(uint32 uiType);
@@ -51,6 +62,8 @@ class MANGOS_DLL_DECL instance_serpentshrine_cavern : public ScriptedInstance
         void Load(const char* chrIn);
 
     private:
+        void DoUnlockVashjBridge();
+
         uint32 m_auiEncounter[MAX_ENCOUNTER];
         uint32 m_auiShieldGenerator[MAX_GENERATOR];
         std::string m_strInstData;

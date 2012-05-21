@@ -63,19 +63,78 @@ void instance_the_eye::OnCreatureCreate(Creature* pCreature)
     }
 }
 
+void instance_the_eye::OnObjectCreate(GameObject* pGo)
+{
+    switch(pGo->GetEntry())
+    {
+        case GO_RAID_DOOR_ALAR_1:
+        case GO_RAID_DOOR_ALAR_2:
+            if (m_auiEncounter[0] == DONE)
+                pGo->SetGoState(GO_STATE_ACTIVE);
+            break;
+        case GO_ARCANE_DOOR_ASTRO_1:
+        case GO_ARCANE_DOOR_ASTRO_2:
+            if (m_auiEncounter[1] == DONE)
+                pGo->SetGoState(GO_STATE_ACTIVE);
+            break;
+        case GO_ARCANE_DOOR_REAVER_1:
+        case GO_ARCANE_DOOR_REAVER_2:
+            if (m_auiEncounter[2] == DONE)
+                pGo->SetGoState(GO_STATE_ACTIVE);
+            break;
+        default:
+            return;
+    }
+    m_mGoEntryGuidStore[pGo->GetEntry()] = pGo->GetObjectGuid();
+}
+
 void instance_the_eye::SetData(uint32 uiType, uint32 uiData)
 {
     switch (uiType)
     {
         case TYPE_ALAR:
+            m_auiEncounter[uiType] = uiData;
+            if (uiData == DONE)
+            {
+                DoUseDoorOrButton(GO_RAID_DOOR_ALAR_1);
+                DoUseDoorOrButton(GO_RAID_DOOR_ALAR_2);
+            }
+            break;
         case TYPE_SOLARIAN:
+            m_auiEncounter[uiType] = uiData;
+            if (uiData == DONE)
+            {
+                DoUseDoorOrButton(GO_ARCANE_DOOR_ASTRO_1);
+                DoUseDoorOrButton(GO_ARCANE_DOOR_ASTRO_2);
+            }
+            break;
         case TYPE_VOIDREAVER:
             m_auiEncounter[uiType] = uiData;
+            if (uiData == DONE)
+            {
+                DoUseDoorOrButton(GO_ARCANE_DOOR_REAVER_1);
+                DoUseDoorOrButton(GO_ARCANE_DOOR_REAVER_2);
+            }
             break;
 
         case TYPE_KAELTHAS_PHASE:
             m_uiKaelthasEventPhase = uiData;
             break;
+    }
+
+    if (uiData == DONE)
+    {
+        OUT_SAVE_INST_DATA;
+
+        std::ostringstream saveStream;
+
+        saveStream << m_auiEncounter[0] << " " << m_auiEncounter[1] << " " << m_auiEncounter[2] << " "
+            << m_auiEncounter[3];
+
+        m_strInstData = saveStream.str();
+
+        SaveToDB();
+        OUT_SAVE_INST_DATA_COMPLETE;
     }
 }
 
@@ -93,6 +152,28 @@ uint32 instance_the_eye::GetData(uint32 uiType)
         default:
             return 0;
     }
+}
+
+void instance_the_eye::Load(const char* chrIn)
+{
+    if (!chrIn)
+    {
+        OUT_LOAD_INST_DATA_FAIL;
+        return;
+    }
+
+    OUT_LOAD_INST_DATA(chrIn);
+
+    std::istringstream loadStream(chrIn);
+    loadStream >> m_auiEncounter[0] >> m_auiEncounter[1] >> m_auiEncounter[2] >> m_auiEncounter[3];
+
+    for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+    {
+        if (m_auiEncounter[i] == IN_PROGRESS)
+            m_auiEncounter[i] = NOT_STARTED;
+    }
+
+    OUT_LOAD_INST_DATA_COMPLETE;
 }
 
 InstanceData* GetInstanceData_instance_the_eye(Map* pMap)
